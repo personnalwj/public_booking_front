@@ -1,20 +1,16 @@
 
-import { NextApiRequest } from 'next';
-import NextAuth, { AuthOptions, DefaultSession, Session } from 'next-auth';
-import type { OIDCConfig } from "@auth/core/providers";
+import NextAuth, { AuthOptions } from 'next-auth';
 import Keycloak from 'next-auth/providers/keycloak';
-import { User } from '@/types/user.type';
 
-const domain = "http://private-keycloak:8080";
 
 
 const options: AuthOptions = {
     providers: [
      Keycloak(
       {
-        issuer: `${domain}/realms/local_jw`,
-        clientId: "public-booking-next-client",
-        clientSecret: "kDO26OXMXPV7LCJeSEVxrd5qMAK6HWxP",
+        issuer: `${process.env.ISSUER}/realms/local_jw`,
+        clientId: `${process.env.CLIENT_ID}`,
+        clientSecret: `${process.env.CLIENT_SECRET}`,
         authorization: { params: { scope: "openid email profile roles" } },
       }
      )
@@ -27,21 +23,6 @@ const options: AuthOptions = {
           token.accessToken = account.accessToken
         }
         return token
-      },
-      async session({ session, token, user }): Promise<Session | DefaultSession> {
-        if(session.user)
-        {
-          session.user = {
-            ...session.user,
-            id: token.sub
-          } as { 
-            name?: string | null | undefined; 
-            email?: string | null | undefined; 
-            image?: string | null | undefined;
-            id?: string | null | undefined;
-          };
-        }
-        return session
       }
     }
 };

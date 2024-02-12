@@ -20,16 +20,16 @@ export function AppNavbar() {
     },[data]);
 
   return (
-    <Navbar expand="lg">
+    <Navbar expand="lg" bg='pb-light'>
       <Container>
         <Navbar.Brand href="/" className='justify-content-between'>
-            <Image src="/logo.svg" alt="logo" width="50" height="50" className="d-inline-block align-top" />
+            <Image src="/logo.png" alt="logo" width="30" height="30" className="d-inline-block align-top" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/">Spots</Nav.Link>
-            <Nav.Link href="/availabities">Mes disponibilités</Nav.Link>
+            <Nav.Link href="/">Accueil</Nav.Link>
+            <Nav.Link href="/avaibilities">Mes disponibilités</Nav.Link>
           </Nav>
         </Navbar.Collapse>
         {
@@ -37,10 +37,10 @@ export function AppNavbar() {
             <NavDropdown title={user} id="basic-nav-dropdown">
                 <NavDropdown.Item><Link href='/profile'>Mon profil</Link></NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={() => signOut()}>Déconnexion</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => signOut({ callbackUrl: '/'})}>Déconnexion</NavDropdown.Item>
             </NavDropdown> :
             <Nav.Item>
-                <Button variant="primary" onClick={() => signIn('keycloak')}>Connexion</Button>
+                <Button variant="pb-primary" onClick={() => signIn('keycloak')}>Connexion</Button>
             </Nav.Item>
         }
       </Container>

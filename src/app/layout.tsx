@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import '../scss/_app.scss';
 import  { AppNavbar } from "@/components/navbar";
 import { Providers } from "./providers";
+import { Container } from 'react-bootstrap';
 
 export default function RootLayout({
   children,
@@ -13,7 +14,9 @@ export default function RootLayout({
         <body>
           <Providers>
             <AppNavbar />
-            {children}
+            <Container>
+              {children}
+            </Container>
           </Providers>
         </body>
         
