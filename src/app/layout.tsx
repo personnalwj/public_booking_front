@@ -1,10 +1,8 @@
-"use client";
-
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { SessionProvider } from "next-auth/react";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../scss/_app.scss';
+import  { AppNavbar } from "@/components/navbar";
+import { Providers } from "./providers";
+import { Container } from 'react-bootstrap';
 
 export default function RootLayout({
   children,
@@ -12,10 +10,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <SessionProvider>
-        <body>{children}</body>
-      </SessionProvider>
+    <html lang="fr">
+        <body>
+          <Providers>
+            <AppNavbar />
+            <Container>
+              {children}
+            </Container>
+          </Providers>
+        </body>
+        
     </html>
   );
 }
