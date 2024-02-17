@@ -1,0 +1,17 @@
+@import './colors';
+$font: "Lora", sans-serif;
+
+
+$theme-colors: (
+    "pb-light": $pb-light-purple,
+    "pb-dark": $pb-dark,
+    "pb-secondary": $gray,
+    "pb-primary": $indigo,
+    "pb-danger": $red,
+    "pb-warning": $orange,
+    "pb-success": $green,
+    "pb-info": $teal,
+);
+
+@import '~bootstrap/scss/bootstrap';
+
