@@ -37,7 +37,7 @@ export function AppNavbar() {
             <NavDropdown title={user} id="basic-nav-dropdown">
                 <NavDropdown.Item><Link href='/profile'>Mon profil</Link></NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={() => signOut({ callbackUrl: '/'})}>Déconnexion</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => signOut()}>Déconnexion</NavDropdown.Item>
             </NavDropdown> :
             <Nav.Item>
                 <Button variant="pb-primary" onClick={() => signIn('keycloak')}>Connexion</Button>
