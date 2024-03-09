@@ -2,6 +2,7 @@ FROM node:18-alpine as deps
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache curl
 WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs
@@ -37,8 +38,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 8081
+EXPOSE 3000
 
-ENV PORT 8081
+ENV PORT 3000
 
 CMD ["node", "server.js"]

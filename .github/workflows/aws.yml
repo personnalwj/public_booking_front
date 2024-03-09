@@ -32,11 +32,11 @@ on:
 
 env:
   ECR_REPOSITORY: pb-front           # set this to your Amazon ECR repository name
-  ECS_SERVICE:  pb-dev-environment-NextJsService-3eNHR1450uO9                # set this to your Amazon ECS service name
-  ECS_CLUSTER: pb-dev-cluster                 # set this to your Amazon ECS cluster name
+  ECS_SERVICE:  front-end               # set this to your Amazon ECS service name
+  ECS_CLUSTER: api-gateway-fargate-ClusterStack-1WZ2I898V2IZI-ECSCluster-yboM4hEzYgFk  # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: pb-front           # set this to the name of the container in the
+  CONTAINER_NAME: front-end           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
 permissions:
