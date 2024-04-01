@@ -1,6 +1,8 @@
+import { UserResponse } from "@/types/user.type";
 import { signIn } from "supertokens-web-js/recipe/emailpassword";
 
-async function signInClicked(email: string, password: string): Promise<string | undefined> {
+
+async function signInClicked(email: string, password: string): Promise <UserResponse | undefined> {
     try {
         let response = await signIn({
             formFields: [{
@@ -26,12 +28,7 @@ async function signInClicked(email: string, password: string): Promise<string | 
             // can tell you so you know why their sign in was not allowed.
             window.alert(response.reason)
         } else {
-            // sign in successful. The session tokens are automatically handled by
-            // the frontend SDK.
-            // console.log("Sign in successful !", response)
-            console.log("Sign in successful !", response.user.emails[0])
-            return response.user.emails[0];
-            // window.location.href = "/"
+            return response.user as UserResponse;
         }
     } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {

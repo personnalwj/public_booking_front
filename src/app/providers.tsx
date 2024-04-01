@@ -1,4 +1,5 @@
-import { SuperTokensInit } from "./components/supertokensInit";
+"use client";
+
 import { UserProvider, useUser } from "./contexts/user.context";
 import "./globals.css";
 import Navbar from "@/app/components/navbar";
@@ -8,13 +9,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = useUser();
   return (
-    <html lang="fr">
-      <SuperTokensInit>
-        <body>
-          <UserProvider>{children}</UserProvider>
-        </body>
-      </SuperTokensInit>
-    </html>
+    <UserProvider>
+      <Navbar last_name={user.last_name} />
+      {children}
+    </UserProvider>
   );
 }

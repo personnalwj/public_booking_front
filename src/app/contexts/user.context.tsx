@@ -1,26 +1,19 @@
 "use client";
 
+import { UserAction, UserMetadata } from '@/types/user.type';
 import React, { createContext, useContext, useReducer } from 'react';
 import { signOut } from 'supertokens-web-js/recipe/emailpassword';
 
-interface UserContext {
-    firstName: string;
-    lastName: string;
-    email: string;
-}
-interface UserAction {
-    type: 'add' | 'remove';
-    payload: UserContext;
-}
-export const UserContext = createContext<UserContext | undefined>(undefined);
 
-const UserDispatchContext = createContext<React.Dispatch<UserAction>| undefined>(undefined);
+export const UserContext = createContext<UserMetadata | null>(null);
 
-const userReducer = (state: UserContext, action: UserAction): UserContext => {
+const UserDispatchContext = createContext<React.Dispatch<UserAction>| null>(null);
+
+const userReducer = (state: UserMetadata | null, action: UserAction): UserMetadata | null => {
     switch (action.type) {
-        case 'add':
+        case 'added':
             return { ...state, ...action.payload };
-        case 'remove':
+        case 'removed':
             signOut();
             return initialState;
         default:
@@ -41,7 +34,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useUser = () => {
     const context = useContext(UserContext);
-    if (context === undefined) {
+    if (context === null) {
         throw new Error('useUser must be used within a UserProvider');
     }
     return context;
@@ -49,14 +42,15 @@ export const useUser = () => {
 
 export const useUserDispatch = () => {
     const context = useContext(UserDispatchContext);
-    if (context === undefined) {
+    if (context === null) {
         throw new Error('useUserDispatch must be used within a UserProvider');
     }
     return context;
 }
 
-const initialState: UserContext = {
-    firstName: 'willy',
-    lastName: 'NYANTCHOU',
-    email: 'noubissiew@local.com'
-}
+const initialState: UserMetadata = {
+    email: '',
+    first_name: '',
+    last_name: '',
+    id: '',   
+};
