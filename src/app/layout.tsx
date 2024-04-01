@@ -1,7 +1,7 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../scss/_app.scss";
-import { AppNavbar } from "@/components/navbar";
-import { Container } from "react-bootstrap";
+import { SuperTokensInit } from "./components/supertokensInit";
+import { UserProvider } from "./contexts/user.context";
+import "./globals.css";
+import Navbar from "@/app/components/navbar";
 
 export default function RootLayout({
   children,
@@ -10,10 +10,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body>
-        <AppNavbar />
-        <Container>{children}</Container>
-      </body>
+      <UserProvider>
+        <SuperTokensInit>
+          <body>
+            <Navbar />
+            {children}
+          </body>
+        </SuperTokensInit>
+      </UserProvider>
     </html>
   );
 }
