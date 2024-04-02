@@ -1,7 +1,7 @@
-import { SuperTokensInit } from "./components/supertokensInit";
-import { UserProvider, useUser } from "./contexts/user.context";
+import Providers from "./providers";
 import "./globals.css";
-import Navbar from "@/app/components/navbar";
+import Navbar from "@/app/layouts/navbar";
+import { SuperTokensProvider } from "./components/supertokensInit";
 
 export default function RootLayout({
   children,
@@ -10,11 +10,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <SuperTokensInit>
-        <body>
-          <UserProvider>{children}</UserProvider>
-        </body>
-      </SuperTokensInit>
+      <SuperTokensProvider>
+        <Providers>
+            <body>
+              <Navbar />
+              {children}
+            </body>
+        </Providers>
+      </SuperTokensProvider>
     </html>
   );
 }

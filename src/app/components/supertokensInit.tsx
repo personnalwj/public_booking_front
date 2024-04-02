@@ -1,15 +1,19 @@
 'use client';
 import React from 'react';
-import SuperTokensWebJs from 'supertokens-web-js'
-import { frontendConfig } from '../config/frontend';
+import { SuperTokensWrapper } from 'supertokens-auth-react';
+import SuperTokensReact from 'supertokens-auth-react';
+import { frontendConfig, setRouter } from '../config/frontend';
+import { usePathname, useRouter } from 'next/navigation';
 
 if (typeof window !== 'undefined') {
   // we only want to call this init function on the frontend, so we check typeof window !== 'undefined'
-  SuperTokensWebJs.init(frontendConfig());
+  SuperTokensReact.init(frontendConfig());
 }
 
-export const SuperTokensInit: React.FC<React.PropsWithChildren<{}>> = ({
+export const SuperTokensProvider: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
-  return <>{children}</>;
+  setRouter(useRouter(), usePathname() || window.location.pathname);
+
+  return <SuperTokensWrapper>{children}</SuperTokensWrapper>;
 };

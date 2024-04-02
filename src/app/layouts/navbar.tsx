@@ -1,7 +1,6 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable react/jsx-no-comment-textnodes */
-import { Fragment } from "react";
+
+import { Fragment, use, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -10,6 +9,10 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "../contexts/user.context";
+import { signOut } from "supertokens-web-js/recipe/emailpassword";
+import { redirect } from "next/navigation";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 const navigation = [
   { name: "Accueil", href: "/", current: true },
@@ -21,7 +24,24 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ last_name }: { last_name?: string }) {
+export default function Navbar() {
+  const { first_name } = useUser();
+  const [isLogout, setIsLogout] = useState(false);
+  const logout = async () => {
+    try {
+      await signOut();
+      setIsLogout(true);
+    } catch (error) {
+     console.log("error", error); 
+    }
+  }
+  useEffect(() => {
+    if (isLogout) {
+      redirect('/login');
+    }
+  } , [isLogout]);
+
+
   return (
     <Disclosure as="nav" className="bg-indigo-900">
       {({ open }) => (
@@ -72,13 +92,13 @@ export default function Navbar({ last_name }: { last_name?: string }) {
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
-                {last_name ? (
+                {first_name ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="relative flex text-gray-400 text-sm focus:outline-none">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        {last_name}
+                        {first_name}
                         <ChevronDownIcon
                           className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
                           aria-hidden="true"
@@ -125,6 +145,7 @@ export default function Navbar({ last_name }: { last_name?: string }) {
                           {({ active }) => (
                             <a
                               href="#"
+                              onClick={logout}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
@@ -138,7 +159,7 @@ export default function Navbar({ last_name }: { last_name?: string }) {
                     </Transition>
                   </Menu>
                 ) : (
-                  <Link 
+                  <Link
                     href="/login"
                     className="text-indigo-300 hover:bg-indigo-600 hover:text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     type="submit"

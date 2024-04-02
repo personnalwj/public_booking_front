@@ -1,19 +1,43 @@
 "use client";
 
-import { UserProvider, useUser } from "./contexts/user.context";
-import "./globals.css";
-import Navbar from "@/app/components/navbar";
+import { useEffect, useState } from "react";
+import { getAccessToken } from "supertokens-web-js/recipe/session";
+import axios from "axios";
+import { UserMetadata } from "@/types/user.type";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import { UserProvider } from "./contexts/user.context";
 
-export default function RootLayout({
+export default function Providers({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = useUser();
+  const [user, setUser] = useState<UserMetadata | null>(null);
+  const session = useSessionContext();
+  useEffect(() => {
+    const verifiedUser = async () => {
+      if (session.loading === false && session.doesSessionExist && user === null) {
+        const accessToken = await getAccessToken();
+        await axios
+        .get("http://public-booking.api.local/back-api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
+    };
+    verifiedUser();
+  },[user, session]);
+
   return (
-    <UserProvider>
-      <Navbar last_name={user.last_name} />
-      {children}
-    </UserProvider>
+      <UserProvider value={user}>
+        {children}
+      </ UserProvider>
   );
 }

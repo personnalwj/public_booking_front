@@ -5,8 +5,6 @@ import { UserContext } from "./contexts/user.context";
 
 export default function Home() {
   const user = useContext(UserContext);
-  console.log('************** user ************\n', user);
-
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">

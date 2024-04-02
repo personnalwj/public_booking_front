@@ -2,21 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import signInClicked from "./login";
-import { useUser, useUserDispatch } from "../contexts/user.context";
 import { redirect } from "next/navigation";
 
+
 const LoginPage: React.FC = () => {
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useUserDispatch();
-  const user = useUser();
 
   useEffect(() => {
-      if (user.id) {
-          console.log('in useeffect user', user);
+      if (isLogin) {
           redirect('/');
       }
-  },[user]);
+  },[isLogin]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -30,18 +28,8 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     // TODO: Handle login logic here
     try {
-      const user = await signInClicked(email, password);
-      if (user) {
-        dispatch({
-          type: "added",
-          payload: {
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.emails[0],
-            id: user.id,
-          },
-        });
-      }
+      await signInClicked(email, password);
+      setIsLogin(true);
     } catch (error) {
       console.log("error", error);
     }
