@@ -20,7 +20,9 @@ export const frontendConfig = (): SuperTokensConfig => {
     appInfo,
     recipeList: [
       EmailPasswordReact.init(),
-      SessionReact.init(),
+      SessionReact.init({
+        tokenTransferMethod: "header",
+      }),
     ],
     windowHandler: (original) => ({
       ...original,

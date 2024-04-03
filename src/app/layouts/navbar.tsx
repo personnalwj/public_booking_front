@@ -10,9 +10,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "../contexts/user.context";
-import { signOut } from "supertokens-web-js/recipe/emailpassword";
 import { redirect } from "next/navigation";
-import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import { signOut } from "supertokens-web-js/recipe/session";
 
 const navigation = [
   { name: "Accueil", href: "/", current: true },
@@ -28,19 +27,14 @@ export default function Navbar() {
   const { first_name } = useUser();
   const [isLogout, setIsLogout] = useState(false);
   const logout = async () => {
-    try {
-      await signOut();
-      setIsLogout(true);
-    } catch (error) {
-     console.log("error", error); 
-    }
-  }
+    await signOut();
+    setIsLogout(true);
+  };
   useEffect(() => {
     if (isLogout) {
-      redirect('/login');
+      redirect("/login");
     }
-  } , [isLogout]);
-
+  }, [isLogout]);
 
   return (
     <Disclosure as="nav" className="bg-indigo-900">
@@ -144,14 +138,13 @@ export default function Navbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
                               onClick={logout}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                "block px-4 py-2 text-sm text-gray-700 hover:cursor-pointer"
                               )}
                             >
-                              Sign out
+                              Se deconnecter
                             </a>
                           )}
                         </Menu.Item>

@@ -34,7 +34,6 @@ export default function Providers({
     };
     verifiedUser();
   },[user, session]);
-
   return (
       <UserProvider value={user}>
         {children}
