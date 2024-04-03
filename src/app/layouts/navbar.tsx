@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "../contexts/user.context";
-import { redirect } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { signOut } from "supertokens-web-js/recipe/session";
 
 const navigation = [
@@ -24,7 +24,8 @@ function classNames(...classes: string[]) {
 }
 
 export default function Navbar() {
-  const { first_name } = useUser();
+  const user = useUser();
+  const pathname = usePathname();
   const [isLogout, setIsLogout] = useState(false);
   const logout = async () => {
     await signOut();
@@ -35,7 +36,9 @@ export default function Navbar() {
       redirect("/login");
     }
   }, [isLogout]);
-
+  if (pathname === "/login") {
+    return <></>;
+  }
   return (
     <Disclosure as="nav" className="bg-indigo-900">
       {({ open }) => (
@@ -86,13 +89,13 @@ export default function Navbar() {
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
-                {first_name ? (
+                {user ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="relative flex text-gray-400 text-sm focus:outline-none">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        {first_name}
+                        {user.first_name}
                         <ChevronDownIcon
                           className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
                           aria-hidden="true"

@@ -1,18 +1,16 @@
 "use client";
 
-import { UserAction, UserMetadata } from '@/types/user.type';
-import { headers } from 'next/headers';
+import { UserAction, UserResponse } from '@/types/user.type';
 import React, { createContext, useContext, useReducer } from 'react';
 import { signOut } from 'supertokens-web-js/recipe/emailpassword';
-import { getAccessToken } from 'supertokens-web-js/recipe/session';
-import axios from 'axios';
 
 
-export const UserContext = createContext<UserMetadata | null>(null);
+
+export const UserContext = createContext<UserResponse | null>(null);
 
 export const UserDispatchContext = createContext<React.Dispatch<UserAction>| null>(null);
 
-const userReducer = (state: UserMetadata | null, action: UserAction): UserMetadata | null => {
+const userReducer = (state: UserResponse | null, action: UserAction): UserResponse | null => {
     switch (action.type) {
         case 'added':
             return { ...state, ...action.payload };
@@ -24,9 +22,15 @@ const userReducer = (state: UserMetadata | null, action: UserAction): UserMetada
     }
 }
 
-export const UserProvider: React.FC<{ children: React.ReactNode, value: UserMetadata | null }> = ({ children, value }) => {
+export const UserProvider: React.FC<{ children: React.ReactNode, value: UserResponse | null }> = ({ children, value }) => {
+
     const init = value ? value : initialState;
-    const [user, dispatch] = useReducer(userReducer, initialState)
+    /**
+     *  react useReducer hook don't update the context value if the initial value is updated
+     *  https://github.com/facebook/react/issues/22712
+     * 
+     * */
+    const [, dispatch] = useReducer(userReducer, init);
     return (
         <UserContext.Provider value={init}>
             <UserDispatchContext.Provider value={dispatch}>
@@ -38,23 +42,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode, value: UserMeta
 
 export const useUser = () => {
     const context = useContext(UserContext);
-    if (context === null) {
-        throw new Error('useUser must be used within a UserProvider');
-    }
     return context;
 }
 
 export const useUserDispatch = () => {
     const context = useContext(UserDispatchContext);
-    if (context === null) {
-        throw new Error('useUserDispatch must be used within a UserProvider');
-    }
     return context;
 }
 
-const initialState: UserMetadata = {
-    email: '',
-    first_name: '',
-    last_name: '',
-    id: '',   
-};
+const initialState = null;
