@@ -16,6 +16,7 @@ export function setRouter(
 }
 
 export const frontendConfig = (): SuperTokensConfig => {
+  console.log("frontendConfig, appInfo: ", appInfo);
   return {
     appInfo,
     recipeList: [
