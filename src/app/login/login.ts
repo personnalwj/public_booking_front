@@ -1,4 +1,3 @@
-import { UserResponse } from "@/types/user.type";
 import { signIn } from "supertokens-web-js/recipe/emailpassword";
 
 async function signInClicked(

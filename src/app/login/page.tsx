@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import signInClicked from "./login";
 import { redirect } from "next/navigation";
 import { useForm, SubmitHandler, set } from "react-hook-form";
-import { on } from "events";
 
 interface IFormInput {
   email: string;

@@ -7,7 +7,7 @@ export type UserMetadata = {
 
 export type UserResponse = UserMetadata & User;
 
-export type UserAction ={
+export type UserAction = {
     type: 'added' | 'removed' | 'updated';
     payload: UserResponse;
 }; 

@@ -17,6 +17,7 @@ const navigation = [
   { name: "Accueil", href: "/", current: true },
   { name: "Mes réservations", href: "/bookings", current: false },
   { name: "Disponibilités", href: "/avaibilities", current: false },
+  { name: "Administration", href: "/admin", current: false },
 ];
 
 function classNames(...classes: string[]) {
