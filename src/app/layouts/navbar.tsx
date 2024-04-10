@@ -34,7 +34,7 @@ export default function Navbar() {
   };
   useEffect(() => {
     if (isLogout) {
-      redirect("/login");
+      redirect("/");
     }
   }, [isLogout]);
   if (pathname === "/login") {
