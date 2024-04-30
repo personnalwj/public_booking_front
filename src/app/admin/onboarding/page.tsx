@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Tab } from "@headlessui/react";
-import CreateCongregation from "./congregations/create/form";
+import CreateCongregation from "../congregations/form/form";
+import { Congregation } from "@/types/congregation.type";
+import TimeSlotForm from "../time-slots/form/form";
+import SpotForm from "../spots/form/form";
+import { fetchUserCongregations } from "./api";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+
 function OnboardingPage() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [congregation, setCongeration] = useState<Congregation | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -25,29 +30,26 @@ function OnboardingPage() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const getUserCongregation = async () => {
+      fetchUserCongregations().then((user) => {
+        setCongeration(user.congregation);
+      });
+    }
+    getUserCongregation();
+  },[]);
+
   const tabs = [
     {
       title: "Congregation",
-      content: () => <CreateCongregation />,
-      status: "enabled",
-    },
-    {
-      title: "Creneaux",
-      content: () => (
-        <div>
-          <p>Content for Tab 2</p>
-        </div>
-      ),
-      status: "disabled",
+      content: () => <CreateCongregation handleSumit={setCongeration} congregation={congregation} />,
+      status: "enabled"
     },
     {
       title: "Spots",
-      content: () => (
-        <div>
-          <p>Content for Tab 3</p>
-        </div>
-      ),
-      status: "disabled",
+      content: <SpotForm />,
+      status: selectedTab === 1 ? "enabled" : "disabled",
     },
   ];
   return (

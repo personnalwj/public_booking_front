@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import { UserContext } from "../../../contexts/user.context";
+import { UserContext } from "@/app/contexts/user.context";
 
 export default function Home() {
   const user = useContext(UserContext);
