@@ -10,3 +10,23 @@ export async function fetchUserCongregations() {
         throw error;
     }
 }
+
+export async function fetchSpots() {
+    try {
+        const response = await api.get(`/congregation/spots`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching spots:', error);
+        throw error;
+    }
+}
+
+export async function fetchTimeSlots() {
+    try {
+        const response = await api.get(`/time-slots`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching time slots:', error);
+        throw error;
+    }
+}

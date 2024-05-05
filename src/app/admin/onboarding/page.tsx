@@ -6,18 +6,22 @@ import CreateCongregation from "../congregations/form/form";
 import { Congregation } from "@/types/congregation.type";
 import TimeSlotForm from "../time-slots/form/form";
 import SpotForm from "../spots/form/form";
-import { fetchUserCongregations } from "./api";
+import { fetchTimeSlots, fetchUserCongregations } from "./api";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-
 function OnboardingPage() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [congregation, setCongeration] = useState<Congregation | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
+
   useEffect(() => {
+    if (congregation) {
+      setSelectedTab(1);
+    }
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -29,26 +33,40 @@ function OnboardingPage() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [congregation]);
 
   useEffect(() => {
     const getUserCongregation = async () => {
       fetchUserCongregations().then((user) => {
         setCongeration(user.congregation);
       });
-    }
+    };
     getUserCongregation();
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    const getTimeSlots = async () => {
+      const response = await fetchTimeSlots();
+      setTimeSlots(response);
+      console.log(response);
+    };
+    getTimeSlots();
+  }, []);
 
   const tabs = [
     {
       title: "Congregation",
-      content: () => <CreateCongregation handleSumit={setCongeration} congregation={congregation} />,
-      status: "enabled"
+      content: () => (
+        <CreateCongregation
+          handleSumit={setCongeration}
+          congregation={congregation}
+        />
+      ),
+      status: "enabled",
     },
     {
       title: "Spots",
-      content: <SpotForm />,
+      content: <SpotForm timeSlots={timeSlots} />,
       status: selectedTab === 1 ? "enabled" : "disabled",
     },
   ];
