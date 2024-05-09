@@ -3,9 +3,9 @@ import Input from "@/app/components/input";
 import { Congregation } from "@/types/congregation.type";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import createCongregation, { updateCongregation } from "./api";
-import { useSessionContext } from "supertokens-auth-react/recipe/session";
-import { redirect } from "next/navigation";
+import createCongregation, { updateCongregation } from "@/app/apis/congregation.api";
+import { useAxios } from "../utils/axios";
+
 
 const CreateCongregation: React.FC<{
   congregation: Congregation | null;
@@ -17,8 +17,8 @@ const CreateCongregation: React.FC<{
     formState: { errors },
     setValue,
   } = useForm<Congregation>();
-
-  const [congregationData, setCongregationData] = useState<Congregation | null>(
+  const axiosClient = useAxios();
+  const [congregationPayload, setcongregationPayload] = useState<Congregation | null>(
     congregation
   );
 
@@ -26,20 +26,20 @@ const CreateCongregation: React.FC<{
     if (congregation) {
       setValue('name', congregation.name);
       setValue('address', congregation.address);
-      setCongregationData(congregation);
+      setcongregationPayload(congregation);
     }
   }, [congregation, setValue]);
   const onSubmit: SubmitHandler<Congregation> = async (data) => {
     try {
-      if(congregationData) {
-        const result = await updateCongregation(congregationData.id, { ...congregationData, ...data });
+      if(congregationPayload) {
+        const result = await updateCongregation(axiosClient, congregationPayload.id, { ...congregationPayload, ...data });
         handleSumit(result.congregation);
-        setCongregationData(result.congregation);
+        setcongregationPayload(result.congregation);
         return null;
       }
-      const result = await createCongregation(data);
+      const result = await createCongregation(axiosClient, data);
       handleSumit(result.congregation);
-      setCongregationData(result.congregation);
+      setcongregationPayload(result.congregation);
       return null;
     } catch (error) {
       console.log(error);

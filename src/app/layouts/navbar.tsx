@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, use, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -9,9 +9,9 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { useUser } from "../contexts/user.context";
-import { redirect, usePathname } from "next/navigation";
-import { signOut } from "supertokens-web-js/recipe/session";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import Button from "../components/button";
+import Loading from "../components/loading";
 
 const navigation = [
   { name: "Accueil", href: "/", current: true },
@@ -25,21 +25,12 @@ function classNames(...classes: string[]) {
 }
 
 export default function Navbar() {
-  const user = useUser();
-  const pathname = usePathname();
-  const [isLogout, setIsLogout] = useState(false);
-  const logout = async () => {
-    await signOut();
-    setIsLogout(true);
-  };
-  useEffect(() => {
-    if (isLogout) {
-      redirect("/");
-    }
-  }, [isLogout]);
-  if (pathname === "/login") {
-    return <></>;
+  const { login, logout, user, isLoading } = useKindeAuth();
+
+  if (isLoading) {
+    return <Loading />;
   }
+
   return (
     <Disclosure as="nav" className="bg-indigo-900">
       {({ open }) => (
@@ -96,7 +87,7 @@ export default function Navbar() {
                       <Menu.Button className="relative flex text-gray-400 text-sm focus:outline-none">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        {user.first_name}
+                        {user.given_name}
                         <ChevronDownIcon
                           className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
                           aria-hidden="true"
@@ -156,14 +147,15 @@ export default function Navbar() {
                     </Transition>
                   </Menu>
                 ) : (
-                  <Link
-                    href="/login"
+                  <Button
+                    onClick={login}
                     className="text-indigo-300 hover:bg-indigo-600 hover:text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     type="submit"
                   >
                     Se connecter
-                  </Link>
-                )}
+                  </Button>
+               
+                ) }
               </div>
             </div>
           </div>

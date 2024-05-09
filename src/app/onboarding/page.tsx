@@ -2,11 +2,14 @@
 
 import { use, useEffect, useState } from "react";
 import { Tab } from "@headlessui/react";
-import CreateCongregation from "../congregations/form/form";
-import { Congregation } from "@/types/congregation.type";
-import TimeSlotForm from "../time-slots/form/form";
-import SpotForm from "../spots/form/form";
-import { fetchTimeSlots, fetchUserCongregations } from "./api";
+import CongregationForm from "@/app/forms/congregation.form";
+import { Congregation, Spot } from "@/types/congregation.type";
+import SpotForm from "@/app/forms/spots.form";
+import { fetchSpotsByCongregation, fetchTimeSlots } from "@/app/apis/spot.api";
+import { fetchUserCongregations } from "@/app/apis/congregation.api";
+import { useAxios } from "@/app/utils/axios";
+import Card from "@/app/components/card";
+import Button from "@/app/components/button";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -17,6 +20,8 @@ function OnboardingPage() {
   const [congregation, setCongeration] = useState<Congregation | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
+  const [spots, setSpots] = useState<Spot[] | null>(null);
+  const axiosClient = useAxios();
 
   useEffect(() => {
     if (congregation) {
@@ -29,35 +34,53 @@ function OnboardingPage() {
     handleResize();
 
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [congregation]);
-
+  console.log('******* spots', spots);
   useEffect(() => {
     const getUserCongregation = async () => {
-      fetchUserCongregations().then((user) => {
+      fetchUserCongregations(axiosClient).then((user) => {
         setCongeration(user.congregation);
       });
     };
     getUserCongregation();
-  }, []);
+  }, [axiosClient]);
 
   useEffect(() => {
     const getTimeSlots = async () => {
-      const response = await fetchTimeSlots();
+      const response = await fetchTimeSlots(axiosClient);
       setTimeSlots(response);
-      console.log(response);
     };
     getTimeSlots();
-  }, []);
+  }, [axiosClient]);
 
+  useEffect(() => {
+    const getSpots = async () => {
+      if (!congregation) return;
+      const response = await fetchSpotsByCongregation(
+        axiosClient,
+        congregation.id
+      );
+      setSpots(response);
+    };
+    getSpots();
+  }, [axiosClient, congregation]);
+
+
+  const handleSpotSubmit = (spot: Spot) => {
+    if (!spots) {
+      setSpots([spot]);
+      return;
+    }
+    setSpots([...spots, spot]);
+  };
   const tabs = [
     {
       title: "Congregation",
       content: () => (
-        <CreateCongregation
+        <CongregationForm
           handleSumit={setCongeration}
           congregation={congregation}
         />
@@ -66,7 +89,30 @@ function OnboardingPage() {
     },
     {
       title: "Spots",
-      content: <SpotForm timeSlots={timeSlots} />,
+      content: (
+        <>
+          <SpotForm timeSlots={timeSlots} handleSubmit={handleSpotSubmit} congregation={congregation} />
+          <>
+            {spots && (
+              <div className="flex-col justify-center items-center">
+                <div className="flex flex-wrap">
+                  {spots.map((spot: Spot, key: number) => (
+                    <Card
+                      key={`${spot.title}-${key}`}
+                      title={spot.title}
+                      description={spot.address}
+                      className="w-full sm:w-1/2 mt-4"
+                    />
+                  ))}
+                </div>
+                <Button type="button" className="w-1/4 items-center justify-center">
+                  Terminer
+                </Button>
+              </div>
+            )}
+          </>
+        </>
+      ),
       status: selectedTab === 1 ? "enabled" : "disabled",
     },
   ];

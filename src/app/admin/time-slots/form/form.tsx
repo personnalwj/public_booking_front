@@ -51,7 +51,6 @@ const TimeSlotPicker = () => {
         <Listbox value={null} onChange={(e: string) => 
             {
                 if (e) {
-                    console.log("target **********",e);
                     setSelectedTimeSlots([...selectedTimeSlots, e]);
                 }
             }
