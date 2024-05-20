@@ -1,15 +1,15 @@
-import Input from "@/app/components/input";
+import { Input } from "@/components/ui/input";
 import { Listbox } from "@headlessui/react";
 import { XCircleIcon } from "@heroicons/react/16/solid";
-import React, { use, useEffect, useState } from "react";
-import { Controller, useController, useForm } from "react-hook-form";
-import Button from "../components/button";
-import { Congregation, Spot, TimeSlot } from "@/types/congregation.type";
-import { create } from "domain";
-import { createSpot } from "../apis/spot.api";
-import { useAxios } from "../utils/axios";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Congregation } from "@/types/congregation.type";
+import { createSpot } from "@/api/spots.api";
+import { useAxios } from "@/hooks/useAxios";
 import { UUID } from "crypto";
-// import Listbox from "@/app/components/listbox";
+import { Spot, TimeSlot } from "@/types/spot.type";
+import { Label } from "@/components/ui/label";
 
 const SpotForm = ({
   timeSlots,
@@ -18,7 +18,7 @@ const SpotForm = ({
 }: {
   timeSlots: TimeSlot[];
   handleSubmit: (spot: Spot) => void;
-  congregation: Congregation;
+  congregation?: Congregation;
 }) => {
   const {
     register,
@@ -47,70 +47,72 @@ const SpotForm = ({
   };
   const onSubmit = async (data: Spot) => {
     try {
-        console.log('data', data.timeSlots.map((slot) => slot.id));
-        const body = {
-            title: data.title,
-            description: data.description,
-            address: data.address,
-            timeSlots: data.timeSlots.map((slot) => slot.id as UUID),
-            congregation: congregation.id,
-        };
-        const result = await createSpot(axiosClient, body);
-        console.log(' created spot', result);
-        handleSubmitParent(data);
-        reset();
-        setSelectedTimeslot([]);    }
-    catch (error) {
+      if (!congregation) return;
+      const body = {
+        title: data.title,
+        description: data.description,
+        address: data.address,
+        timeSlots: data.timeSlots.map((slot) => slot.id as UUID),
+        congregation: congregation.id,
+      };
+      await createSpot(axiosClient, body);
+      handleSubmitParent(data);
+      reset();
+      setSelectedTimeslot([]);
+    } catch (error) {
       console.log(error);
     }
-  
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
+    <form onSubmit={handleSubmit(onSubmit)}>
       <h5 className="text-2xl font-bold text-center">Créer un spot</h5>
       <div className="mb-4">
+        <Label htmlFor="title">Titre</Label>
         <Input
           type="text"
           id="title"
-          label="Titre du spot"
+          placeholder="Nommez ce spot"
           {...register("title", { required: true })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.title && (
-          <span className="text-red-500">Title is required</span>
+          <span className="text-red-500 text-sm text-left">
+            Veuillez donner un titre à ce spot
+          </span>
         )}
       </div>
       <div className="mb-4">
-        <label htmlFor="description" className="block mb-2 font-bold">
-          Description
-        </label>
+        <Label htmlFor="description">Description</Label>
         <textarea
           id="description"
           {...register("description", { required: true })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 textarea focus:ring-indigo-500 text-sm"
+          placeholder="Décrivez ce spot et donnez des informations utiles pour les frères et soeurs."
         />
         {errors.description && (
-          <span className="text-red-500">Description is required</span>
+          <span className="text-red-500 text-sm text-left">
+            Veuillez entrer une description de cet emplacement
+          </span>
         )}
       </div>
       <div className="mb-4">
+        <Label htmlFor="address">Adresse</Label>
         <Input
           type="text"
-          label="Addresse"
           id="address"
           {...register("address", { required: true })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Entrez une adresse ou une localisation pour ce spot"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
         />
         {errors.address && (
-          <span className="text-red-500">Address is required</span>
+          <span className="text-red-500 text-sm text-left">
+            Une adresse est requise pour créer un spot
+          </span>
         )}
       </div>
       {selectedTimeslot.length > 0 && (
         <div className="mb-4">
-          <label htmlFor="timeslot" className="block mb-2 font-bold">
-            Créneaux
-          </label>
+          <Label htmlFor="timeslot">Créneaux</Label>
           <div className="flex w-full rounded-md shadow-lg items-center flex-wrap max-h-40 overflow-auto border p-2">
             {selectedTimeslot.map((timeslot: TimeSlot) => (
               <span
@@ -146,7 +148,7 @@ const SpotForm = ({
                 }}
                 as={"div"}
               >
-                <Listbox.Button className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <Listbox.Button className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                   Choisissez vos créneaux
                 </Listbox.Button>
                 <Listbox.Options className="absolute py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
@@ -171,7 +173,7 @@ const SpotForm = ({
                 </Listbox.Options>
               </Listbox>
               {errors.timeSlots && (
-                <span className="text-red-500">
+                <span className="text-red-500 text-sm text-left">
                   Vous devez définir des créneaux
                 </span>
               )}
@@ -179,7 +181,7 @@ const SpotForm = ({
           )}
         />
       )}
-      <Button>Créer le spot</Button>
+      <Button className="btn text-sm">Créer le spot</Button>
     </form>
   );
 };

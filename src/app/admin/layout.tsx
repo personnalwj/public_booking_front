@@ -1,6 +1,6 @@
 "use client";
 
-import IsAdmin from "@/app/providers/isAdmin";
+import IsAdmin from "@/providers/isAdmin";
 
 export default function AdminLayout({
   children,

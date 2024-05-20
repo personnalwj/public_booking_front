@@ -1,15 +1,16 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab } from "@headlessui/react";
-import CongregationForm from "@/app/forms/congregation.form";
-import { Congregation, Spot } from "@/types/congregation.type";
-import SpotForm from "@/app/forms/spots.form";
-import { fetchSpotsByCongregation, fetchTimeSlots } from "@/app/apis/spot.api";
-import { fetchUserCongregations } from "@/app/apis/congregation.api";
-import { useAxios } from "@/app/utils/axios";
-import Card from "@/app/components/card";
-import Button from "@/app/components/button";
+import CongregationForm from "@/forms/congregation.form";
+import { Congregation } from "@/types/congregation.type";
+import { fetchSpotsByCongregation, fetchTimeSlots } from "@/api/spots.api";
+import { fetchUserCongregations } from "@/api/congregations.api";
+import { useAxios } from "@/utils/axios";
+
+import { Spot } from "@/types/spot.type";
+import SpotContent from "./spot.content";
+import { useRouter } from "next/navigation";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -17,36 +18,28 @@ function classNames(...classes: string[]) {
 
 function OnboardingPage() {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [congregation, setCongeration] = useState<Congregation | null>(null);
+  const [congregation, setCongeration] = useState<Congregation | undefined>(
+    undefined
+  );
   const [isMobile, setIsMobile] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [spots, setSpots] = useState<Spot[] | null>(null);
   const axiosClient = useAxios();
+  const [hasSubmitSpot, setHasSubmitSpot] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (congregation) {
       setSelectedTab(1);
+      return;
     }
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [congregation]);
-  console.log('******* spots', spots);
-  useEffect(() => {
     const getUserCongregation = async () => {
       fetchUserCongregations(axiosClient).then((user) => {
         setCongeration(user.congregation);
       });
     };
     getUserCongregation();
-  }, [axiosClient]);
+  }, [axiosClient, congregation]);
 
   useEffect(() => {
     const getTimeSlots = async () => {
@@ -68,14 +61,20 @@ function OnboardingPage() {
     getSpots();
   }, [axiosClient, congregation]);
 
-
   const handleSpotSubmit = (spot: Spot) => {
     if (!spots) {
       setSpots([spot]);
       return;
     }
     setSpots([...spots, spot]);
+    setHasSubmitSpot(true);
   };
+
+  const handleOnboardingEnd = () => {
+    setHasSubmitSpot(true);
+    router.push("/");
+  };
+
   const tabs = [
     {
       title: "Congregation",
@@ -89,30 +88,21 @@ function OnboardingPage() {
     },
     {
       title: "Spots",
-      content: (
-        <>
-          <SpotForm timeSlots={timeSlots} handleSubmit={handleSpotSubmit} congregation={congregation} />
-          <>
-            {spots && (
-              <div className="flex-col justify-center items-center">
-                <div className="flex flex-wrap">
-                  {spots.map((spot: Spot, key: number) => (
-                    <Card
-                      key={`${spot.title}-${key}`}
-                      title={spot.title}
-                      description={spot.address}
-                      className="w-full sm:w-1/2 mt-4"
-                    />
-                  ))}
-                </div>
-                <Button type="button" className="w-1/4 items-center justify-center">
-                  Terminer
-                </Button>
-              </div>
-            )}
-          </>
-        </>
-      ),
+      content: () => {
+        if (spots && congregation) {
+          return (
+            <SpotContent
+              timeSlots={timeSlots}
+              spots={spots}
+              congregation={congregation}
+              handleSpotSubmit={handleSpotSubmit}
+              hasSubmitSpot={hasSubmitSpot}
+              setHasSubmitSpot={setHasSubmitSpot}
+              handleOnboardingEnd={handleOnboardingEnd}
+            />
+          );
+        }
+      },
       status: selectedTab === 1 ? "enabled" : "disabled",
     },
   ];
@@ -142,7 +132,7 @@ function OnboardingPage() {
         </Tab.List>
         <Tab.Panels>
           {tabs.map((tab, index) => (
-            <Tab.Panel key={index}>{tab.content}</Tab.Panel>
+            <Tab.Panel key={index}>{tab.content()}</Tab.Panel>
           ))}
         </Tab.Panels>
       </Tab.Group>

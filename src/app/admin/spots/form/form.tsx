@@ -1,7 +1,7 @@
-import Input from "@/app/components/input";
+import Input from "@/components/ui/input";
 import React, { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Listbox from "@/app/components/listbox";
+import Listbox from "@/components/ui/listbox";
 
 const SpotForm = ({ timeSlots }: any) => {
   const {

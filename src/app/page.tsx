@@ -1,15 +1,20 @@
-"use client";
-
-import { useContext } from "react";
-import { UserContext } from "./contexts/user.context";
+import Link from "next/link";
 
 export default function Home() {
-  const user = useContext(UserContext);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold mb-4">Welcome {user && user.first_name}</h1>
-      <p className="text-lg text-gray-600">This page is comming soon!</p>
+    <div className="hero min-h-screen bg-base-200">
+      <div className="hero-content text-center">
+        <div className="max-w-md">
+          <h1 className="text-2xl font-bold">Bienvenue sur votre espace de reservation de spot</h1>
+          <p className="py-6">
+            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
+            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
+            a id nisi.
+          </p>
+          <Link href='/bookings'> <button className="btn btn-primary" >Réservez un spot</button></Link>
+        </div>
+      </div>
     </div>
   );
 }

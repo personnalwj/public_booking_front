@@ -1,18 +1,17 @@
-import api from "@/app/utils/axios";
 import { Congregation } from "@/types/congregation.type";
 import { AxiosInstance } from "axios";
 
 export default async function createCongregation(
   axiosClient: AxiosInstance,
   congregation: Congregation
-): Promise<{ congregation: Congregation | null; errors: string[] }> {
+): Promise<{ congregation: Congregation | undefined; errors: string[] }> {
   const errors: string[] = [];
   try {
     const response = await axiosClient.post("/congregations", congregation);
     return { congregation: response.data, errors: errors };
   } catch (error: any) {
     errors.push(error.message);
-    return { errors, congregation: null };
+    return { errors, congregation: undefined };
   }
 }
 
@@ -20,7 +19,7 @@ export async function updateCongregation(
   axiosClient: AxiosInstance,
   id: string,
   congregation: Partial<Congregation>
-): Promise<{ congregation: Congregation | null; errors: string[] }> {
+): Promise<{ congregation: Congregation | undefined; errors: string[] }> {
   const errors: string[] = [];
   try {
     const response = await axiosClient.patch(
@@ -33,7 +32,7 @@ export async function updateCongregation(
     };
   } catch (error: any) {
     errors.push(error.message);
-    return { errors, congregation: null };
+    return { errors, congregation: undefined };
   }
 }
 

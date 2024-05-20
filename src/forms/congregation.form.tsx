@@ -1,14 +1,14 @@
-import Button from "@/app/components/button";
-import Input from "@/app/components/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Congregation } from "@/types/congregation.type";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import createCongregation, { updateCongregation } from "@/app/apis/congregation.api";
+import createCongregation, { updateCongregation } from "@/api/congregations.api";
 import { useAxios } from "../utils/axios";
+import { Label } from "@/components/ui/label";
 
-
-const CreateCongregation: React.FC<{
-  congregation: Congregation | null;
+const CongregationForm: React.FC<{
+  congregation: Congregation | undefined;
   handleSumit: (data: any) => void;
 }> = ({ congregation, handleSumit }) => {
   const {
@@ -18,21 +18,25 @@ const CreateCongregation: React.FC<{
     setValue,
   } = useForm<Congregation>();
   const axiosClient = useAxios();
-  const [congregationPayload, setcongregationPayload] = useState<Congregation | null>(
-    congregation
-  );
+  const [congregationPayload, setcongregationPayload] = useState<
+    Congregation | undefined
+  >(congregation);
 
   useEffect(() => {
     if (congregation) {
-      setValue('name', congregation.name);
-      setValue('address', congregation.address);
+      setValue("name", congregation.name);
+      setValue("address", congregation.address);
       setcongregationPayload(congregation);
     }
   }, [congregation, setValue]);
   const onSubmit: SubmitHandler<Congregation> = async (data) => {
     try {
-      if(congregationPayload) {
-        const result = await updateCongregation(axiosClient, congregationPayload.id, { ...congregationPayload, ...data });
+      if (congregationPayload) {
+        const result = await updateCongregation(
+          axiosClient,
+          congregationPayload.id,
+          { ...congregationPayload, ...data }
+        );
         handleSumit(result.congregation);
         setcongregationPayload(result.congregation);
         return null;
@@ -56,8 +60,8 @@ const CreateCongregation: React.FC<{
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-3">
+            <Label htmlFor="name">Nom de l&apos;assemblée</Label>
             <Input
-              label="Nom de votre assemblée"
               type="text"
               id="name"
               {...register("name", { required: true })}
@@ -67,10 +71,10 @@ const CreateCongregation: React.FC<{
             )}
           </div>
           <div className="sm:col-span-3">
+            <Label htmlFor="address">Adresse</Label>
             <Input
               type="text"
               id="address"
-              label="Adresse de l'assemblée"
               {...register("address", { required: true })}
             />
             {errors.address && (
@@ -84,4 +88,4 @@ const CreateCongregation: React.FC<{
   );
 };
 
-export default CreateCongregation;
+export default CongregationForm;

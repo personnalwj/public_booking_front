@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { appInfo } from "../config/appInfo";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const apiClient: AxiosInstance = axios.create({
@@ -26,4 +25,3 @@ export const useAxios = () => {
     );
     return apiClient;
 };   
-export default apiClient;

@@ -1,6 +1,14 @@
-import Providers from "./providers/index";
-import "./globals.css";
-import Navbar from "@/app/layouts/navbar";
+import Providers from "@/providers/index";
+import Navbar from "@/components/layouts/navbar";
+
+import "@/styles/globals.css";
+import { Inter as FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export default function RootLayout({
   children,
@@ -9,12 +17,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-        <Providers>
-          <body>
-              <Navbar />
-              <div className="container mx-auto">{children}</div>
-          </body>
-        </Providers>
+      <Providers>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
+          <Navbar />
+          <div className="container mx-auto">{children}</div>
+        </body>
+      </Providers>
     </html>
   );
 }
