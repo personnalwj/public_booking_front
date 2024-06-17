@@ -1,7 +1,7 @@
-import Input from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import React, { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Listbox from "@/components/ui/listbox";
+import { Listbox } from "@headlessui/react";
 
 const SpotForm = ({ timeSlots }: any) => {
   const {
@@ -26,7 +26,6 @@ const SpotForm = ({ timeSlots }: any) => {
         <Input
           type="text"
           id="title"
-          label="Titre du spot"
           {...register("title", { required: true })}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -52,7 +51,7 @@ const SpotForm = ({ timeSlots }: any) => {
       <div className="mb-4">
         <Input
           type="text"
-          label="Addresse"
+          // label="Addresse"
           id="address"
           {...register("address", { required: true })}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -62,10 +61,10 @@ const SpotForm = ({ timeSlots }: any) => {
         )}
       </div>
 
-      {timeslotsData ? (
+      {/* {timeslotsData ? (
         <div className="mb-4">
           <Listbox
-            label="Créneaux disponibles pour ce spot"
+            // label="Créneaux disponibles pour ce spot"
             timeSlots={timeslotsData}
             {...register("timeslots", { required: true })}
           />
@@ -75,7 +74,7 @@ const SpotForm = ({ timeSlots }: any) => {
         </div>
       ) : (
         <></>
-      )}
+      )} */}
 
       <button
         type="submit"

@@ -4,6 +4,8 @@ import Navbar from "@/components/layouts/navbar";
 import "@/styles/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Suspense } from "react";
+import Loading from "@/components/ui/loading";
 
 const fontSans = FontSans({
   subsets: ["latin"],

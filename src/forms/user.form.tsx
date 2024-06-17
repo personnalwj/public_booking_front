@@ -1,6 +1,9 @@
+import createUser from "@/api/users.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAxios } from "@/hooks/useAxios";
+import { User } from "@/types/user.type";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -9,17 +12,24 @@ const UserForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<User>();
 
-  const onSubmit = (data: any) => {
-    // Logique de création d'utilisateur ici
-    console.log(data);
+  const axiosClient = useAxios();
+  const onSubmit = async (data: User) => {
+    try {
+      await createUser(axiosClient, data);
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
       <div className="mb-4">
-        <Label htmlFor="given_name" className="block mb-2 font-medium text-gray-700">
+        <Label
+          htmlFor="given_name"
+          className="block mb-2 font-medium text-gray-700"
+        >
           Nom
         </Label>
         <Input
@@ -27,7 +37,9 @@ const UserForm = () => {
           id="given_name"
           {...register("given_name", { required: true })}
         />
-        {errors.given_name && <p className="text-red-500 text-sm"> Le champs est requis </p>}
+        {errors.given_name && (
+          <p className="text-red-500 text-sm"> Le champs est requis </p>
+        )}
       </div>
       <div className="mb-4">
         <Label
@@ -41,7 +53,9 @@ const UserForm = () => {
           id="family_name"
           {...register("family_name", { required: true })}
         />
-        {errors.family_name && <p className="text-red-500 text-sm"> Le champs est requis </p>}
+        {errors.family_name && (
+          <p className="text-red-500 text-sm"> Le champs est requis </p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -53,7 +67,9 @@ const UserForm = () => {
           id="email"
           {...register("email", { required: true })}
         />
-        {errors.email && <p className="text-red-500 text-sm">Le champs est requis</p>}
+        {errors.email && (
+          <p className="text-red-500 text-sm">Le champs est requis</p>
+        )}
       </div>
       <Button type="submit">Créer</Button>
     </form>

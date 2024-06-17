@@ -26,7 +26,7 @@ export default function IsOnboarding({
 
     if (isAuthenticated) {
         const claim = getClaim("roles", "access_token") as RolesClaim;
-        if (claim.value.some((role) => role.key === "admin") && getPermission("congregation:create")) {
+        if (claim.value && claim.value.some((role) => role.key === "admin") && getPermission("congregation:create")) {
             return <>{children}</>;
         }
     }

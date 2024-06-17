@@ -22,7 +22,7 @@ export default function IsAdmin({
 
     if (isAuthenticated) {
         const claim = getClaim("roles", "access_token") as RolesClaim;
-        if (claim.value.some((role) => role.key === "admin")) {
+        if (claim.value && claim.value.some((role) => role.key === "admin")) {
             return <>{children}</>;
         }
     }

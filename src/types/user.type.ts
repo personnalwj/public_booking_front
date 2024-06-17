@@ -1,13 +1,5 @@
-import { User } from "supertokens-web-js/types";
-
-export type UserMetadata = {
-    first_name?: string;
-    last_name?: string;
+export type User = {
+    given_name: string;
+    family_name: string;
+    email: string;
 };
-
-export type UserResponse = UserMetadata & User;
-
-export type UserAction = {
-    type: 'added' | 'removed' | 'updated';
-    payload: UserResponse;
-}; 

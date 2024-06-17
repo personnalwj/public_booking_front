@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_DOMAIN}${process.env.NEXT_PUBLIC_SUPERTOKENS_API_BASEPATH}`, // Replace with your base URL
+  baseURL: `${process.env.NEXT_PUBLIC_API_DOMAIN}`, // Replace with your base URL
   timeout: 5000, // Set your desired timeout
   headers: {
     "Content-Type": "application/json", // Set your desired headers
