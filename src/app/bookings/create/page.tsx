@@ -2,6 +2,9 @@
 import { fetchSpotsByCongregation, fetchTimeSlots } from "@/api/spots.api";
 import BookingForm from "@/forms/booking.form";
 import { useAxios } from "@/hooks/useAxios";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import { set } from "date-fns";
+import { se } from "date-fns/locale";
 import React, { use, useEffect, useState } from "react";
 
 interface BookingFormProps {
@@ -15,37 +18,42 @@ interface BookingData {
 }
 
 const CreateBookingPage: React.FC<BookingFormProps> = () => {
-  const axiosClient = useAxios();
-  const [spots, setSpots] = useState<{value: string, label: string}[]>([]);
-  const [timeSlots, setTimeSlots] = useState<{value: string, label: string}[]>([]);
+  const { getToken } = useKindeAuth();
+
+  const [spots, setSpots] = useState<{ value: string; label: string }[]>([]);
+  const [timeSlots, setTimeSlots] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
 
   useEffect(() => {
     const getSpots = async () => {
-      const fetchedSpots = await fetchSpotsByCongregation(axiosClient, "762ce1b2-08bc-458c-bf64-5b275f3e33f1");
-      for (const spot of fetchedSpots) {
-        setSpots((prevSpots) => [
-          ...prevSpots,
-          { value: spot.id, label: spot.title },
-        ]);
+      const token = await getToken();
+      if (!token) {
+        return;
       }
+      const fetchedSpots = await fetchSpotsByCongregation(
+        token,
+        "82620724-7e70-40f9-a35e-dda91ec3f6f2"
+      );
+      setSpots(fetchedSpots.map((spot: any) => ({ value: spot.id, label: spot.title })));
     };
     getSpots();
-  }, [axiosClient]);
+  }, [getToken]);
 
   useEffect(() => {
     const getTimeSlots = async () => {
-      const data = await fetchTimeSlots(axiosClient);
-      for (const slot of data) {
-        setTimeSlots((prevSlots) => [
-          ...prevSlots,
-          { value: slot.id, label: `${slot.startTime} - ${slot.endTime}`  },
-        ]);
-      }
+      const fetchedTimeSlots = await fetchTimeSlots();
+      setTimeSlots(
+        fetchedTimeSlots.map((slot: any) => ({
+          value: slot.id,
+          label: `${slot.startTime} - ${slot.endTime}`,
+        }))
+      );
     };
     getTimeSlots();
-  }, [axiosClient]);
+  }, []);
 
   const handleSend = (bookingData: BookingData) => {
     // Send booking data to server
@@ -61,7 +69,9 @@ const CreateBookingPage: React.FC<BookingFormProps> = () => {
     };
   };
 
-  return <BookingForm onSubmit={handleSend} spots={spots} timeSlots={timeSlots} />;
+  return (
+    <BookingForm onSubmit={handleSend} spots={spots} timeSlots={timeSlots} />
+  );
 };
 
 export default CreateBookingPage;

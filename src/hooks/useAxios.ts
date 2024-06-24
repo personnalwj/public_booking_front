@@ -10,18 +10,18 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 export const useAxios = () => {
-    const { getToken } = useKindeAuth();
-    apiClient.interceptors.request.use(
-        async (config) => {
-        const token = await getToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-        },
-        (error) => {
-        return Promise.reject(error);
-        }
-    );
-    return apiClient;
-};   
+  const { getToken } = useKindeAuth();
+  apiClient.interceptors.request.use(
+    async (config) => {
+      const token = await getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+  return apiClient;
+};

@@ -1,12 +1,19 @@
+import apiClient from "@/utils/axios";
 import { AxiosInstance } from "axios";
 import { UUID } from "crypto";
 
 export async function fetchSpotsByCongregation(
-  axiosClient: AxiosInstance,
+  token: string,
   id: string
 ) {
   try {
-    const response = await axiosClient.get(`/spots/congregation/${id}`);
+    const response = await apiClient.get(`/spots/congregation/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching spots:", error);
@@ -14,9 +21,9 @@ export async function fetchSpotsByCongregation(
   }
 }
 
-export async function fetchTimeSlots(axiosClient: AxiosInstance) {
+export async function fetchTimeSlots() {
   try {
-    const response = await axiosClient.get(`/time-slots`);
+    const response = await apiClient.get(`/time-slots`);
     return response.data;
   } catch (error) {
     console.error("Error fetching time slots:", error);

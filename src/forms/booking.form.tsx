@@ -5,73 +5,144 @@ import { Combobox } from "@/components/business/combobox";
 import { DatePicker } from "@/components/business/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  PopoverContent,
+  PopoverTrigger,
+  Popover,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "@heroicons/react/24/outline";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 
-interface BookingData {
-  name: string;
-  date: string;
-  // Add more fields as needed
+interface BookingPayload {
+  spotName: string;
+  date: Date;
+  timeSlot: string;
 }
-const items = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
 
 type BookingFormProps = {
-  onSubmit: (bookingData: BookingData) => void;
+  onSubmit: (bookingPayload: BookingPayload) => void;
   timeSlots: { value: string; label: string }[];
   spots: { value: string; label: string }[];
 };
 
-const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, timeSlots, spots }) => {
-  const [name, setName] = useState("");
-  const [date, setDate] = useState("");
-  console.log(spots);
-  console.log('timeslots',timeSlots);
+const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<BookingPayload>();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const bookingData: BookingData = {
-      name,
-      date,
-      // Set other fields here
-    };
-    onSubmit(bookingData);
+  const minDate = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 14);
+
+  const onSubmit = (booking: BookingPayload) => {
+    console.log('here is date',booking.date.toISOString());
+    console.log(booking);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
       <h5 className="text-2xl font-bold text-center">Réservez un spot</h5>
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col h-16 justify-around">
         <Label>Date</Label>
-        <DatePicker className="w-full" />
+        <Controller
+          name="date"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    `md:w-[500px] w-[300px] justify-start text-left font-normal`,
+                    !value && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {value ? (
+                    format(value, "PPP", { locale: fr })
+                  ) : (
+                    <span>Choisissez une date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className={`md:w-[500px] w-[300px] p-0`}
+                align="start"
+              >
+                <Calendar
+                  mode="single"
+                  selected={value}
+                  onSelect={onChange}
+                  disabled={{
+                    // dayOfWeek: [0, 4, 6],
+                    before: minDate,
+                    after: maxDate,
+                    // date: (date) => date <= minDate || date > maxDate,
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
+        />
+        {errors.date && (
+          <span className="text-red-500 text-sm text-left">
+            Vous devez choisir une date
+          </span>
+        )}
       </div>
-      <div className="mb-4">
-        <Label>Créneaux</Label>
-        <Combobox items={timeSlots} placeHolder="Choissisez un créneau"/>
-
+      <div className="mb-4 flex flex-col h-16 justify-around item-start">
+        <Label>Créneau</Label>
+        <Controller
+          name="timeSlot"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <Combobox
+              items={timeSlots}
+              placeHolder="Choissiez un créneau"
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+              }}
+            />
+          )}
+        />
+        {errors.timeSlot && (
+          <span className="text-red-500 text-sm text-left">
+            Vous devez choisir un créneau
+          </span>
+        )}
       </div>
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col h-16 justify-around">
         <Label>Spot</Label>
-        <Combobox items={spots} placeHolder="Choissiez un spot"/>
+        <Controller
+          name="spotName"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <Combobox
+              items={spots}
+              placeHolder="Choissiez un spot"
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+              }}
+            />
+          )}
+        />
+        {errors.spotName && (
+          <span className="text-red-500 text-sm text-left">
+            Vous devez choisir un spot
+          </span>
+        )}
       </div>
       <Button type="submit">Reservez</Button>
     </form>

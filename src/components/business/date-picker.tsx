@@ -23,7 +23,7 @@ export function DatePicker({ className }: { className?: string}) {
         <Button
           variant={"outline"}
           className={cn(
-            `w-auto justify-start text-left font-normal ${className}`,
+            `md:w-[500px] w-[300px] justify-start text-left font-normal ${className}`,
             !date && "text-muted-foreground"
           )}
         >
@@ -31,7 +31,7 @@ export function DatePicker({ className }: { className?: string}) {
           {date ? format(date, "PPP", { locale: fr }) : <span>Choisissez une date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={`w-auto p-0`} align="start">
+      <PopoverContent className={`md:w-[500px] w-[300px] p-0`} align="start">
         <Calendar
           mode="single"
           selected={date}
