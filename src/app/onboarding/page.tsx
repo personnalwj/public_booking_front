@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Tab } from "@headlessui/react";
 import CongregationForm from "@/forms/congregation.form";
 import { Congregation } from "@/types/congregation.type";
 import { fetchSpotsByCongregation, fetchTimeSlots } from "@/api/spots.api";
 import { fetchUserCongregations } from "@/api/congregations.api";
-import { useAxios } from "@/utils/axios";
 
 import { Spot } from "@/types/spot.type";
 import SpotContent from "./spot.content";
 import { useRouter } from "next/navigation";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -18,15 +18,26 @@ function classNames(...classes: string[]) {
 
 function OnboardingPage() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [token, setToken] = useState<string>('');
+  const { getToken } = useKindeAuth();
   const [congregation, setCongeration] = useState<Congregation | undefined>(
     undefined
   );
-  const [isMobile, setIsMobile] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [spots, setSpots] = useState<Spot[] | null>(null);
-  const axiosClient = useAxios();
   const [hasSubmitSpot, setHasSubmitSpot] = useState(false);
   const router = useRouter();
+  
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getToken();
+      if (!token) {
+        return;
+      }
+      setToken(token);
+    }
+    fetchToken();
+  }, [getToken]);
 
   useEffect(() => {
     if (congregation) {
@@ -34,32 +45,32 @@ function OnboardingPage() {
       return;
     }
     const getUserCongregation = async () => {
-      fetchUserCongregations(axiosClient).then((user) => {
+      fetchUserCongregations(token).then((user) => {
         setCongeration(user.congregation);
       });
     };
     getUserCongregation();
-  }, [axiosClient, congregation]);
+  }, [token, congregation]);
 
   useEffect(() => {
     const getTimeSlots = async () => {
-      const response = await fetchTimeSlots(axiosClient);
+      const response = await fetchTimeSlots();
       setTimeSlots(response);
     };
     getTimeSlots();
-  }, [axiosClient]);
+  }, [token]);
 
   useEffect(() => {
     const getSpots = async () => {
       if (!congregation) return;
       const response = await fetchSpotsByCongregation(
-        axiosClient,
+        token,
         congregation.id
       );
       setSpots(response);
     };
     getSpots();
-  }, [axiosClient, congregation]);
+  }, [token, congregation]);
 
   const handleSpotSubmit = (spot: Spot) => {
     if (!spots) {

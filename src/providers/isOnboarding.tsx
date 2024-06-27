@@ -24,13 +24,14 @@ export default function IsOnboarding({
     const { isAuthenticated, isLoading, getClaim, getPermission } = useKindeAuth();
     const router = useRouter();
 
-    if (isAuthenticated) {
-        const claim = getClaim("roles", "access_token") as RolesClaim;
-        if (claim.value && claim.value.some((role) => role.key === "admin") && getPermission("congregation:create")) {
-            return <>{children}</>;
-        }
-    }
-    if (!isLoading && isAuthenticated) {
-        router.push("/");
-    }
+    // if (isAuthenticated) {
+    //     const claim = getClaim("roles", "access_token") as RolesClaim;
+    //     if (claim.value && claim.value.some((role) => role.key === "admin") && getPermission("congregation:create")) {
+    //         return <>{children}</>;
+    //     }
+    // }
+    // if (!isLoading && isAuthenticated) {
+    //     router.push("/");
+    // }
+    return <>{children}</>;
 }

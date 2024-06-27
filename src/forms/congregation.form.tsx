@@ -1,26 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Congregation } from "@/types/congregation.type";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import createCongregation, { updateCongregation } from "@/api/congregations.api";
-import { useAxios } from "../utils/axios";
 import { Label } from "@/components/ui/label";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const CongregationForm: React.FC<{
   congregation: Congregation | undefined;
   handleSumit: (data: any) => void;
 }> = ({ congregation, handleSumit }) => {
+  const [token, setToken] = useState<string>('');
+  const { getToken } = useKindeAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
   } = useForm<Congregation>();
-  const axiosClient = useAxios();
   const [congregationPayload, setcongregationPayload] = useState<
     Congregation | undefined
   >(congregation);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getToken();
+      if (!token) {
+        return;
+      }
+      setToken(token);
+    }
+    fetchToken();
+  }, [getToken]);
 
   useEffect(() => {
     if (congregation) {
@@ -33,7 +45,7 @@ const CongregationForm: React.FC<{
     try {
       if (congregationPayload) {
         const result = await updateCongregation(
-          axiosClient,
+          token,
           congregationPayload.id,
           { ...congregationPayload, ...data }
         );
@@ -41,7 +53,7 @@ const CongregationForm: React.FC<{
         setcongregationPayload(result.congregation);
         return null;
       }
-      const result = await createCongregation(axiosClient, data);
+      const result = await createCongregation(token, data);
       handleSumit(result.congregation);
       setcongregationPayload(result.congregation);
       return null;

@@ -34,7 +34,7 @@ export function Combobox({
   items,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState(value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,7 +43,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[300px] md:w-[500px] justify-between text-left font-normal"
+          className="w-[250px] md:w-[500px] justify-between text-left font-normal"
         >
           {search
             ? items.find((item) => item.label === search)?.label
@@ -51,18 +51,22 @@ export function Combobox({
           <ChevronUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] md:w-[500px] p-0" align="end">
+      <PopoverContent className="w-[250px] md:w-[500px] p-0" align="end">
         <Command>
           <CommandInput placeholder={placeHolder} />
           <CommandList>
             <CommandEmpty>Aucun élément trouvé</CommandEmpty>
             <CommandGroup>
+              {/**
+               * Use item.label as value to enable search
+               * set value to item.value on select
+               */}
               {items.map((item) => (
                 <CommandItem
                   key={item.value}
-                  value={item.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  value={item.label}
+                  onSelect={() => {
+                    setValue(item.value);
                     setSearch(item.label);
                     setOpen(false);
                   }}
@@ -70,7 +74,7 @@ export function Combobox({
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.label ? "opacity-100" : "opacity-0"
+                      value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {item.label}

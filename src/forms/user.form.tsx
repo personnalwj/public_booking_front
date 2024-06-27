@@ -2,9 +2,9 @@ import createUser from "@/api/users.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAxios } from "@/hooks/useAxios";
 import { User } from "@/types/user.type";
-import React from "react";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import React, { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const UserForm = () => {
@@ -13,11 +13,22 @@ const UserForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<User>();
+  const [token, setToken] = useState<string>("");
+  const { getToken } = useKindeAuth();
 
-  const axiosClient = useAxios();
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getToken();
+      if (!token) {
+        return;
+      }
+      setToken(token);
+    };
+    fetchToken();
+  }, [getToken]);
   const onSubmit = async (data: User) => {
     try {
-      await createUser(axiosClient, data);
+      await createUser(token, data);
     } catch (error) {
       console.error("Error creating user:", error);
     }

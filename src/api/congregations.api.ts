@@ -1,13 +1,17 @@
 import { Congregation } from "@/types/congregation.type";
-import { AxiosInstance } from "axios";
+import apiClient from "@/utils/axios";
 
 export default async function createCongregation(
-  axiosClient: AxiosInstance,
+  token: string,
   congregation: Congregation
 ): Promise<{ congregation: Congregation | undefined; errors: string[] }> {
   const errors: string[] = [];
   try {
-    const response = await axiosClient.post("/congregations", congregation);
+    const response = await apiClient.post("/congregations", congregation, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return { congregation: response.data, errors: errors };
   } catch (error: any) {
     errors.push(error.message);
@@ -16,15 +20,20 @@ export default async function createCongregation(
 }
 
 export async function updateCongregation(
-  axiosClient: AxiosInstance,
+  token: string,
   id: string,
   congregation: Partial<Congregation>
 ): Promise<{ congregation: Congregation | undefined; errors: string[] }> {
   const errors: string[] = [];
   try {
-    const response = await axiosClient.patch(
+    const response = await apiClient.patch(
       `/congregations/${id}`,
-      congregation
+      congregation,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return {
       congregation: response.data,
@@ -36,9 +45,13 @@ export async function updateCongregation(
   }
 }
 
-export async function fetchUserCongregations(axiosClient: AxiosInstance) {
+export async function fetchUserCongregations(token: string) {
   try {
-    const response = await axiosClient.get(`/users/congregations`);
+    const response = await apiClient.get(`/users/congregations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching user congregations:", error);

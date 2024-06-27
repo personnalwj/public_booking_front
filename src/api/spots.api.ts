@@ -2,17 +2,13 @@ import apiClient from "@/utils/axios";
 import { AxiosInstance } from "axios";
 import { UUID } from "crypto";
 
-export async function fetchSpotsByCongregation(
-  token: string,
-  id: string
-) {
+export async function fetchSpotsByCongregation(token: string, id: string) {
   try {
     const response = await apiClient.get(`/spots/congregation/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    
     });
     return response.data;
   } catch (error) {
@@ -32,7 +28,7 @@ export async function fetchTimeSlots() {
 }
 
 export async function createSpot(
-  axiosClient: AxiosInstance,
+  token: string,
   body: {
     title: string;
     description: string;
@@ -42,7 +38,11 @@ export async function createSpot(
   }
 ) {
   try {
-    const response = await axiosClient.post(`/spots`, body);
+    const response = await apiClient.post(`/spots`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating spot:", error);

@@ -6,10 +6,10 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Congregation } from "@/types/congregation.type";
 import { createSpot } from "@/api/spots.api";
-import { useAxios } from "@/hooks/useAxios";
 import { UUID } from "crypto";
 import { Spot, TimeSlot } from "@/types/spot.type";
 import { Label } from "@/components/ui/label";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const SpotForm = ({
   timeSlots,
@@ -28,11 +28,23 @@ const SpotForm = ({
     reset,
     formState: { errors },
   } = useForm<Spot>();
-  const axiosClient = useAxios();
+  const { getToken } = useKindeAuth();
+  const [token, setToken] = useState<string>("");
   const [timeSlotPayload, setTimeSlotPayload] = useState<TimeSlot[]>(timeSlots);
   const [selectedTimeslot, setSelectedTimeslot] = React.useState<TimeSlot[]>(
     []
   );
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getToken();
+      if (!token) {
+        return;
+      }
+      setToken(token);
+    };
+    fetchToken();
+  }, [getToken]);
 
   useEffect(() => {
     setTimeSlotPayload(timeSlots);
@@ -55,7 +67,7 @@ const SpotForm = ({
         timeSlots: data.timeSlots.map((slot) => slot.id as UUID),
         congregation: congregation.id,
       };
-      await createSpot(axiosClient, body);
+      await createSpot(token, body);
       handleSubmitParent(data);
       reset();
       setSelectedTimeslot([]);

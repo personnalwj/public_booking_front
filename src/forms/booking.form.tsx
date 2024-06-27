@@ -2,8 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/business/combobox";
-import { DatePicker } from "@/components/business/date-picker";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -13,7 +11,7 @@ import {
   Popover,
 } from "@/components/ui/popover";
 import { CalendarIcon } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,15 +20,28 @@ interface BookingPayload {
   spotName: string;
   date: Date;
   timeSlot: string;
+  companions: string;
 }
 
+const companions = [
+  { value: "1", label: "Willy" },
+  { value: "2", label: "Danielle" },
+  { value: "3", label: "Dimah" },
+  { value: "4", label: "Iwal" },
+  { value: "5", label: "Hiyam" },
+];
 type BookingFormProps = {
   onSubmit: (bookingPayload: BookingPayload) => void;
   timeSlots: { value: string; label: string }[];
   spots: { value: string; label: string }[];
+  cancel: () => void;
 };
 
-const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
+const BookingForm: React.FC<BookingFormProps> = ({
+  timeSlots,
+  spots,
+  cancel,
+}) => {
   const {
     handleSubmit,
     control,
@@ -42,13 +53,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
   maxDate.setDate(maxDate.getDate() + 14);
 
   const onSubmit = (booking: BookingPayload) => {
-    console.log('here is date',booking.date.toISOString());
     console.log(booking);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
-      <h5 className="text-2xl font-bold text-center">Réservez un spot</h5>
       <div className="mb-4 flex flex-col h-16 justify-around">
         <Label>Date</Label>
         <Controller
@@ -61,7 +70,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    `md:w-[500px] w-[300px] justify-start text-left font-normal`,
+                    `md:w-[500px] w-[250px] justify-start text-left font-normal`,
                     !value && "text-muted-foreground"
                   )}
                 >
@@ -74,18 +83,20 @@ const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className={`md:w-[500px] w-[300px] p-0`}
+                className={`md:w-[500px] w-[250px] p-0`}
                 align="start"
               >
                 <Calendar
                   mode="single"
                   selected={value}
-                  onSelect={onChange}
+                  onSelect={
+                    (date) => {
+                      onChange(date?.toISOString() || "");
+                    }
+                  }
                   disabled={{
-                    // dayOfWeek: [0, 4, 6],
                     before: minDate,
                     after: maxDate,
-                    // date: (date) => date <= minDate || date > maxDate,
                   }}
                 />
               </PopoverContent>
@@ -144,7 +155,38 @@ const BookingForm: React.FC<BookingFormProps> = ({ timeSlots, spots }) => {
           </span>
         )}
       </div>
-      <Button type="submit">Reservez</Button>
+      <div className="mb-4 flex flex-col h-16 justify-around">
+        <Label>Compagnons</Label>
+        <Controller
+          name="companions"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <Combobox
+              items={companions}
+              placeHolder="Choisissez un compagnon"
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+              }}
+            />
+          )}
+        />
+
+        {errors.companions && (
+          <span className="text-red-500 text-sm text-left">
+            Vous devez entrer le nombre de personnes
+          </span>
+        )}
+      </div>
+      <div className="mb-4 flex justify-start">
+        <Button type="submit" className="mr-1">
+          Reservez
+        </Button>
+        <Button type="button" variant="destructive" onClick={cancel}>
+          Annuler
+        </Button>
+      </div>
     </form>
   );
 };
